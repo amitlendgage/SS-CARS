@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S S Cards Technology – Catalog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#10212b;--paper:#e8eef1;--card:#fff;--line:#c7d3d9;--muted:#52656f;--wa:#0b7a4b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.45}
+  header{padding:28px 20px 8px;max-width:1100px;margin:0 auto}
+  h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1;margin:0 0 8px;font-weight:800;letter-spacing:-.02em}
+  header p{margin:0;color:var(--muted);max-width:52ch}
+  .tools{max-width:1100px;margin:18px auto 0;padding:0 20px;display:flex;gap:10px;flex-wrap:wrap}
+  input[type=search]{flex:1 1 220px;font:inherit;padding:12px 14px;border:2px solid var(--ink);border-radius:10px;background:#fff}
+  .ask{background:var(--wa);color:#fff;text-decoration:none;font-weight:600;padding:12px 16px;border-radius:10px}
+  a:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid #e4306c;outline-offset:2px}
+  main{max-width:1100px;margin:20px auto 60px;padding:0 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:22px}
+  /* Each category is drawn as an ID card with a punched lanyard slot */
+  .id{background:var(--card);border-radius:16px;border:1px solid var(--line);overflow:hidden}
+  .band{height:46px;background:var(--c);position:relative}
+  .band::after{content:"";position:absolute;left:50%;top:14px;width:54px;height:12px;margin-left:-27px;border-radius:8px;background:var(--paper);box-shadow:inset 0 1px 2px rgba(0,0,0,.25)}
+  .id h2{margin:14px 16px 6px;font-size:1.25rem;font-weight:800}
+  .id ul{list-style:none;margin:0;padding:0 16px 14px}
+  .id li{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:.95rem}
+  .id li a{flex:none;color:var(--wa);font-weight:600;text-decoration:none;border:1.5px solid var(--wa);border-radius:8px;padding:4px 10px;font-size:.85rem}
+  .empty{grid-column:1/-1;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <h1>S S Cards Technology</h1>
+  <p>PVC cards, ID cards, RFID, lanyards and printers from Panvel. Tap Get quote and we reply on WhatsApp.</p>
+</header>
+<div class="tools">
+  <input id="q" type="search" placeholder="Search products, e.g. lanyard" aria-label="Search products">
+  <a class="ask" id="general" href="#">Chat on WhatsApp</a>
+</div>
+<main id="grid"></main>
+
+<script>
+  // WhatsApp number for quote requests (country code + number, digits only).
+  const WA_NUMBER = '918957537747';
+
+  const CATALOG = [
+    ['PVC cards','#0e7c86',['Gold and silver foil PVC ID card','Multicolor Ayushman PVC card','PVC inkjet ID card','Canon inkjet PVC card','Jewellery PVC card']],
+    ['ID cards','#e4306c',['College ID card','Corporate ID card','Silver glitter ID card','Printed ID card 1600 micron','ID card design service']],
+    ['RFID and smart cards','#5b4bdb',['RFID game card','RFID parking card','Mifare 1k card','Mifare 4k card','UHF printed combo card','NFC Google review tap card']],
+    ['Lanyards','#d9822b',['Digital printing ID card lanyard','Printed satin lanyard','Plain ID card lanyard','Branding cap lanyard','Metal engraving cap lanyard','Key chain lanyard']],
+    ['Business and membership cards','#1f6fb2',['Spot UV PVC business card','Gold foiling business card','NFC printed card','Transparent business card','Membership card','Loyalty PVC card']],
+    ['Embossed cards','#8a6d1d',['Multicolor embossed card','Gold glitter embossed card','Silver emboss card single line']],
+    ['Card printers and ribbons','#2f3e46',['PVC ID card printer','Evolis card printer','Zebra ID card printer','Evolis printer ribbon','HID card printer ribbon','Datacard SD360 ribbon','Color ribbon kit YMCKT','Printer repair service']],
+    ['Wristbands, badges and holders','#b3365f',['Satin printed wristband','Silicone wristband','QR code wristband','Pin badge','Metal medal lanyard','Metal ID card holder','Plastic pouch for ID cards']],
+    ['Software','#3c8d40',['ID card printing software','Thermal card printing software']]
+  ];
+
+  const link = t => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(t)}`;
+  document.getElementById('general').href = link('Hi, I want to know about your cards and lanyards.');
+
+  const grid = document.getElementById('grid');
+  function render(filter){
+    const f = filter.trim().toLowerCase();
+    const html = CATALOG.map(([name,color,items]) => {
+      const shown = items.filter(i => !f || i.toLowerCase().includes(f) || name.toLowerCase().includes(f));
+      if(!shown.length) return '';
+      return `<section class="id" style="--c:${color}"><div class="band"></div><h2>${name}</h2><ul>` +
+        shown.map(i => `<li><span>${i}</span><a href="${link('Hi, I need a quote for: ' + i)}" target="_blank" rel="noopener">Get quote</a></li>`).join('') +
+        `</ul></section>`;
+    }).join('');
+    grid.innerHTML = html || '<p class="empty">No match. Chat with us on WhatsApp and we will help you find it.</p>';
+  }
+  document.getElementById('q').addEventListener('input', e => render(e.target.value));
+  render('');
+</script>
+</body>
+</html>
